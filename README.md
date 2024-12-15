@@ -30,6 +30,7 @@ fn main() {
     hex_to_uf2_file(
         Path::new("./test/rmk-central.hex"),
         Path::new("./test/rmk-central.uf2"),
+        None,
     )
     .unwrap();
 }

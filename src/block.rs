@@ -21,6 +21,7 @@ impl Block {
     /// encode this block to uf2
     pub fn encode(&self, block_no: u32, number_of_blocks: u32, family_id: Option<u32>) -> Vec<u8> {
         let flags: u32 = match family_id {
+            Some(0x0) => 0x0,
             Some(_) => 0x2000,
             None => 0x0,
         };

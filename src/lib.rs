@@ -5,17 +5,19 @@ use std::{
 };
 
 use anyhow::{anyhow, Result};
+use families::{get_family_id, ChipFamily};
 
 use crate::block::Block;
 
 pub mod block;
+pub mod families;
 
 const ADDRESS_MASK: u32 = 0xff;
 const INVERTED_ADDRESS_MASK: u32 = !ADDRESS_MASK;
 
 pub fn hex_to_uf2(
     hex_lines: impl Iterator<Item = impl AsRef<str>>,
-    family_id: Option<u32>,
+    family: Option<ChipFamily>,
 ) -> Result<Vec<u8>> {
     let mut upper: u32 = 0;
     let mut app_start_address: Option<u32> = None;
@@ -97,6 +99,11 @@ pub fn hex_to_uf2(
 
     let number_of_blocks = blocks.len() as u32;
 
+    let family_id = match family {
+        Some(family) => Some(get_family_id(family)),
+        None => None,
+    };
+
     Ok(blocks
         .iter()
         .enumerate()
@@ -108,9 +115,12 @@ pub fn hex_to_uf2(
         .collect())
 }
 
-pub fn hex_to_uf2_file(hex_file: &Path, output_path: &Path) -> Result<()> {
+pub fn hex_to_uf2_file(
+    hex_file: &Path,
+    output_path: &Path,
+    family: Option<ChipFamily>,
+) -> Result<()> {
     let binary_buffer = BufReader::new(File::open(hex_file).expect("Couldn't open input file!"));
-    let family = None;
 
     let uf2_buffer = hex_to_uf2(
         binary_buffer
@@ -151,16 +161,16 @@ mod tests {
         println!("{uf2_bytes:X?}");
     }
 
-    #[test]
-    fn compare_to_python() {
-        hex_to_uf2_file(
-            Path::new("./test/fenris-rmk-central.hex"),
-            Path::new("./test/fenris-rmk-central.uf2"),
-        )
-        .unwrap();
+    fn compare_to_python(
+        input: &Path,
+        output: &Path,
+        python_out: &Path,
+        family: Option<ChipFamily>,
+    ) {
+        hex_to_uf2_file(input, output, family).unwrap();
 
-        let rust_reader = BufReader::new(File::open("./test/fenris-rmk-central.uf2").unwrap());
-        let python_reader = BufReader::new(File::open("./test/fenris-rmk-central_py.uf2").unwrap());
+        let rust_reader = BufReader::new(File::open(output).unwrap());
+        let python_reader = BufReader::new(File::open(python_out).unwrap());
 
         let mut rust_bytes = rust_reader.bytes();
         let mut python_bytes = python_reader.bytes();
@@ -189,5 +199,25 @@ mod tests {
 
             position += 1;
         }
+    }
+
+    #[test]
+    fn no_family_should_be_same() {
+        compare_to_python(
+            Path::new("./test/fenris-rmk-central.hex"),
+            Path::new("./test/fenris-rmk-central.uf2"),
+            Path::new("./test/fenris-rmk-central_py.uf2"),
+            None,
+        );
+    }
+
+    #[test]
+    fn family_should_be_same() {
+        compare_to_python(
+            Path::new("./test/fenris-rmk-central.hex"),
+            Path::new("./test/fenris-rmk-central_id.uf2"),
+            Path::new("./test/fenris-rmk-central_py_id.uf2"),
+            Some(ChipFamily::RP2040),
+        );
     }
 }

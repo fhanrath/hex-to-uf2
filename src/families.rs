@@ -70,7 +70,7 @@ pub enum ChipFamily {
     XR809,
 }
 
-/// returns the if of a given family
+/// returns the id of a given family
 pub fn get_family_id(family: ChipFamily) -> u32 {
     match family {
         ChipFamily::ATMEGA32 => 0x16573617, // Microchip (Atmel) ATmega32

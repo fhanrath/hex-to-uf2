@@ -2,6 +2,10 @@
 name = "hex_to_uf2"
 version = "0.1.0"
 edition = "2021"
+license = "AGPLv3"
+
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
 anyhow = "1.0.94"

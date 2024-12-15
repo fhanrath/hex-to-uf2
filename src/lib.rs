@@ -6,69 +6,17 @@ use std::{
 
 use anyhow::{anyhow, Result};
 
-const UF2_MAGIC_START0: u32 = 0x0A324655; // "UF2\n"
-const UF2_MAGIC_START1: u32 = 0x9E5D5157;
-const UF2_MAGIC_END: u32 = 0x0AB16F30;
+use crate::block::Block;
+
+pub mod block;
+
 const ADDRESS_MASK: u32 = 0xff;
 const INVERTED_ADDRESS_MASK: u32 = !ADDRESS_MASK;
 
-struct Block {
-    pub address: u32,
-    pub bytes: [u8; 256],
-}
-
-impl Block {
-    pub fn new(address: u32) -> Self {
-        Self {
-            address,
-            bytes: [0; 256],
-        }
-    }
-
-    pub fn encode(&self, block_no: u32, number_of_blocks: u32, family_id: Option<u32>) -> Vec<u8> {
-        let flags: u32 = match family_id {
-            Some(_) => 0x2000,
-            None => 0x0,
-        };
-
-        // Header: equivalent to struct.pack in Python
-        let mut header = vec![];
-        header.extend_from_slice(&UF2_MAGIC_START0.to_le_bytes());
-        header.extend_from_slice(&UF2_MAGIC_START1.to_le_bytes());
-        header.extend_from_slice(&flags.to_le_bytes());
-        header.extend_from_slice(&self.address.to_le_bytes());
-        header.extend_from_slice(&(256u32).to_le_bytes()); // Fixed size
-        header.extend_from_slice(&block_no.to_le_bytes());
-        header.extend_from_slice(&number_of_blocks.to_le_bytes());
-        if family_id.is_some() {
-            header.extend_from_slice(&family_id.unwrap().to_le_bytes());
-        } else {
-            header.extend_from_slice(&(0x00 as u32).to_le_bytes());
-        }
-
-        // Add the block's data
-        header.extend_from_slice(&self.bytes);
-
-        // Pad with 0x00 to make it 512 bytes - 4 (for the footer)
-        while header.len() < 512 - 4 {
-            header.push(0x00);
-        }
-
-        header.extend_from_slice(&UF2_MAGIC_END.to_le_bytes());
-
-        header
-    }
-}
-
-fn main() {
-    hex_to_uf2_file(
-        Path::new("./test/fenris-rmk-central.hex"),
-        Path::new("./test/fenris-rmk-central.uf2"),
-    )
-    .unwrap();
-}
-
-fn hex_to_uf2(hex_lines: impl Iterator<Item = String>, family_id: Option<u32>) -> Result<Vec<u8>> {
+pub fn hex_to_uf2(
+    hex_lines: impl Iterator<Item = impl AsRef<str>>,
+    family_id: Option<u32>,
+) -> Result<Vec<u8>> {
     let mut upper: u32 = 0;
     let mut app_start_address: Option<u32> = None;
 
@@ -77,6 +25,7 @@ fn hex_to_uf2(hex_lines: impl Iterator<Item = String>, family_id: Option<u32>) -
     let mut blocks: Vec<Block> = vec![];
 
     for hex_line in hex_lines {
+        let hex_line = hex_line.as_ref();
         if !hex_line.starts_with(':') {
             continue;
         }
@@ -108,7 +57,7 @@ fn hex_to_uf2(hex_lines: impl Iterator<Item = String>, family_id: Option<u32>) -
                 if app_start_address.is_none() {
                     app_start_address = Some(address);
                 }
-                // skip first 4 and last item
+                // Skip first 4 and last item
                 for index in 4..binary_line.len() - 1 {
                     let byte = &binary_line[index];
                     if current_block.is_none()
@@ -159,7 +108,7 @@ fn hex_to_uf2(hex_lines: impl Iterator<Item = String>, family_id: Option<u32>) -
         .collect())
 }
 
-fn hex_to_uf2_file(hex_file: &Path, output_path: &Path) -> Result<()> {
+pub fn hex_to_uf2_file(hex_file: &Path, output_path: &Path) -> Result<()> {
     let binary_buffer = BufReader::new(File::open(hex_file).expect("Couldn't open input file!"));
     let family = None;
 
@@ -185,6 +134,22 @@ mod tests {
     use std::io::Read;
 
     use super::*;
+
+    #[test]
+    fn static_string() {
+        let static_string = ":020000041000EA
+:1000000000B5324B212058609868022188439860DF
+:10001000D860186158612E4B002199600221596106
+:100020000121F02299502B49196001219960352056
+:1000300000F044F80222904214D00621196600F024
+:1000400034F8196E01211966002018661A6600F04E
+:100050002CF8196E196E196E052000F02FF8012189
+:100060000842F9D1002199601B49196000215960AB";
+
+        let uf2_bytes = hex_to_uf2(static_string.lines(), None);
+
+        println!("{uf2_bytes:X?}");
+    }
 
     #[test]
     fn compare_to_python() {

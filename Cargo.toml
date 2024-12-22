@@ -1,5 +1,5 @@
 [workspace]
 members = [
     "hex_to_uf2",
-    "hex_to_uf2_bin",
+    "cargo_hex_to_uf2",
 ]

@@ -1,5 +1,5 @@
 [package]
-name = "hex_to_uf2_bin"
+name = "cargo-hex-to-uf2"
 version = "0.1.0"
 edition = "2021"
 

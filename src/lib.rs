@@ -60,8 +60,7 @@ pub fn hex_to_uf2(
                     app_start_address = Some(address);
                 }
                 // Skip first 4 and last item
-                for index in 4..binary_line.len() - 1 {
-                    let byte = &binary_line[index];
+                for byte in binary_line.iter().take(binary_line.len() - 1).skip(4) {
                     if current_block.is_none()
                         || (current_block.as_ref().unwrap().address & INVERTED_ADDRESS_MASK)
                             != (address & INVERTED_ADDRESS_MASK)
@@ -99,10 +98,7 @@ pub fn hex_to_uf2(
 
     let number_of_blocks = blocks.len() as u32;
 
-    let family_id = match family {
-        Some(family) => Some(get_family_id(family)),
-        None => None,
-    };
+    let family_id = family.map(get_family_id);
 
     Ok(blocks
         .iter()

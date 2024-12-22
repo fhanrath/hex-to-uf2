@@ -34,10 +34,10 @@ impl Block {
         header.extend_from_slice(&(256u32).to_le_bytes()); // Fixed size
         header.extend_from_slice(&block_no.to_le_bytes());
         header.extend_from_slice(&number_of_blocks.to_le_bytes());
-        if family_id.is_some() {
-            header.extend_from_slice(&family_id.unwrap().to_le_bytes());
+        if let Some(family_id) = family_id {
+            header.extend_from_slice(&family_id.to_le_bytes());
         } else {
-            header.extend_from_slice(&(0x00 as u32).to_le_bytes());
+            header.extend_from_slice(&(0x00_u32).to_le_bytes());
         }
 
         // Add the block's data

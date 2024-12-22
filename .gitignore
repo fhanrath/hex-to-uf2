@@ -1,1 +1,6 @@
 /target
+/test
+!/test/fenris-rmk-central.hex
+!/test/fenris-rmk-central_py.uf2
+!/test/fenris-rmk-central_py_id.uf2
+uf2conv.py

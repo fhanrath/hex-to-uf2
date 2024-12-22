@@ -1,4 +1,9 @@
+#[cfg(feature = "clap")]
+use clap::ValueEnum;
+
 /// All known chip families
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "clap", derive(ValueEnum))]
 pub enum ChipFamily {
     AT32F415,
     ATMEGA32,

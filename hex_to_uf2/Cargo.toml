@@ -1,8 +1,11 @@
 [package]
-name = "hex_to_uf2"
+name = "hex-to-uf2"
 version = "0.1.0"
 edition = "2021"
-license = "AGPLv3"
+readme = "README.md"
+repository = "https://git.sr.ht/~fenris/hex-to-uf2"
+description = "Convert hex to uf2"
+license-file = "LICENSE.md"
 
 [lib]
 crate-type = ["cdylib", "lib"]

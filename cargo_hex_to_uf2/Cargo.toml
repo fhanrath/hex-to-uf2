@@ -2,8 +2,12 @@
 name = "cargo-hex-to-uf2"
 version = "0.1.0"
 edition = "2021"
+readme = "README.md"
+repository = "https://git.sr.ht/~fenris/hex-to-uf2"
+description = "Cargo tool to convert hex to uf2 files"
+license-file = "LICENSE.md"
 
 [dependencies]
 anyhow = "1.0.95"
 clap = { version = "4.5.23", features = ["derive"] }
-hex_to_uf2 = { path = "../hex_to_uf2", features=["clap"] }
+hex-to-uf2 = { path = "../hex_to_uf2", version = "0.1.0", features=["clap"] }

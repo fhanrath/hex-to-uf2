@@ -9,6 +9,7 @@ use hex_to_uf2::{families::ChipFamily, hex_to_uf2_file};
 struct Cli {
     hex_file: PathBuf,
     output_path: PathBuf,
+    #[arg(short, long)]
     family: Option<ChipFamily>,
 }
 

@@ -2,10 +2,10 @@
 name = "cargo-hex-to-uf2"
 version = "0.1.0"
 edition = "2021"
-readme = "README.md"
+readme = "../README.md"
 repository = "https://git.sr.ht/~fenris/hex-to-uf2"
 description = "Cargo tool to convert hex to uf2 files"
-license-file = "LICENSE.md"
+license-file = "../LICENSE.md"
 
 [dependencies]
 anyhow = "1.0.95"

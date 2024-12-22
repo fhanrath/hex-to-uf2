@@ -2,10 +2,10 @@
 name = "hex-to-uf2"
 version = "0.1.0"
 edition = "2021"
-readme = "README.md"
+readme = "../README.md"
 repository = "https://git.sr.ht/~fenris/hex-to-uf2"
-description = "Convert hex to uf2"
-license-file = "LICENSE.md"
+description = "Library to convert hex to uf2"
+license-file = "../LICENSE.md"
 
 [lib]
 crate-type = ["cdylib", "lib"]

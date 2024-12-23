@@ -25,19 +25,32 @@ enum Commands {
         /// family of chips
         #[arg(short, long)]
         family: Option<ChipFamily>,
+        /// Log debug level
+        #[arg(short, long, default_value_t = false)]
+        debug: bool,
     },
 }
 
 fn main() {
     let args = Cli::parse();
 
-    println!("{:?}", args);
-
-    match args.command {
+    match &args.command {
         Commands::HexToUf2 {
             input_path,
             output_path,
             family,
-        } => hex_to_uf2_file(&input_path, &output_path, family).unwrap(),
+            debug,
+        } => {
+            let log_level = match debug {
+                true => tracing::Level::DEBUG,
+                false => tracing::Level::INFO,
+            };
+
+            tracing_subscriber::fmt().with_max_level(log_level).init();
+
+            tracing::debug!("{:?}", &args);
+
+            hex_to_uf2_file(input_path, output_path, family.clone()).unwrap();
+        }
     }
 }

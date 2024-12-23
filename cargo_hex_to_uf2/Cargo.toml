@@ -1,6 +1,6 @@
 [package]
 name = "cargo-hex-to-uf2"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 readme = "../README.md"
 repository = "https://git.sr.ht/~fenris/hex-to-uf2"
@@ -11,3 +11,6 @@ license-file = "../LICENSE.md"
 anyhow = "1.0.95"
 clap = { version = "4.5.23", features = ["derive"] }
 hex-to-uf2 = { path = "../hex_to_uf2", version = "0.1.0", features=["clap"] }
+log = "0.4.22"
+tracing = "0.1.41"
+tracing-subscriber = "0.3.19"

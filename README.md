@@ -1,5 +1,7 @@
 # hex_to_uf2
 
+[main repo](https://git.sr.ht/~fenris/hex-to-uf2)
+
 This crate converts .hex files to .uf2 files according to the following standard:
 https://github.com/microsoft/uf2
 
